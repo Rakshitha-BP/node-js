@@ -3,25 +3,9 @@ const hbs = require("hbs");
 const path = require("path");
 
 const app = express();
-const weatherDataUtil = require("../utils/weatherData"); // Renamed to avoid variable name conflict
+const weatherData = require("../utils/weatherData");
 
-// Define routes and middleware here
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-// Route to handle weather data for multiple locations
-app.get('/weather', async (req, res) => {
-    const locations = req.query.locations;
-    if (!locations) {
-        return res.status(400).json({ error: 'Locations parameter is required' });
-    }
-    const locationsArray = locations.split(',');
-    const weatherData = await weatherDataUtil.fetchWeatherData(locationsArray); // Assuming this function exists in weatherData module
-    res.json(weatherData);
-});
+const port = process.env.PORT || 3001;
 
 // Define paths for Express config
 const publicPath = path.join(__dirname, "../public");
@@ -46,7 +30,7 @@ app.get("/weather", (req, res) => {
   if (!req.query.address) {
     return res.send("Address is required");
   }
-  weatherDataUtil(req.query.address, (error, result) => { // Assuming this function exists in weatherData module
+  weatherData(req.query.address, (error, result) => {
     if (error) {
       return res.send(error);
     }
@@ -58,4 +42,9 @@ app.get("/weather", (req, res) => {
 // Handle 404 (Not Found) page
 app.get("*", (req, res) => {
   res.render("404", { title: "Page not found" });
+});
+
+// Start server
+app.listen(port, () => {
+  console.log("Server is listening on port " + port);
 });
